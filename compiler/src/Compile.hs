@@ -6,9 +6,11 @@ module Compile
   where
 
 
+import Debug.Trace
 import qualified Data.Map as Map
 import qualified Data.Name as Name
 
+import Data.List
 import qualified AST.Source as Src
 import qualified AST.Canonical as Can
 import qualified AST.Optimized as Opt

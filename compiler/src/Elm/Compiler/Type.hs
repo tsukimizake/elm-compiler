@@ -40,6 +40,7 @@ data Type
   | Record [(Name.Name, Type)] (Maybe Name.Name)
   | Unit
   | Tuple Type Type [Type]
+  deriving(Show)
 
 
 data DebugMetadata =
