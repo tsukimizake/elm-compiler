@@ -57,6 +57,7 @@ import GHC.Prim
 import GHC.Word (Word8(W8#))
 
 import qualified Elm.String as ES
+import qualified Data.Utf8
 
 
 

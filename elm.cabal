@@ -54,6 +54,8 @@ Executable elm
     Main-Is:
         Main.hs
 
+    default-extensions:
+        BangPatterns
     other-modules:
         Bump
         Develop
