@@ -66,8 +66,6 @@ import qualified Elm.String as ES
 type Name =
   Utf8.Utf8 ELM_NAME
 
-instance Show Name where
-  show = toChars
 
 data ELM_NAME
 
