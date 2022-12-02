@@ -77,8 +77,8 @@ import Prelude hiding (String, all, any, concat)
 data Utf8 tipe
   = Utf8 ByteArray#
 
-instance Show (Utf8 t) where
-  show _ = "{utf8}"
+instance Show (Utf8 a) where
+  show = Data.Utf8.toChars
 
 -- EMPTY
 

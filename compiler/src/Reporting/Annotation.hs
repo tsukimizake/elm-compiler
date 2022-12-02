@@ -24,7 +24,9 @@ import Prelude hiding (traverse)
 
 data Located a
   = At Region a -- PERF see if unpacking region is helpful
-  deriving (Show)
+
+instance (Show a) => Show (Located a) where
+  show (At _ a) = show a
 
 instance Functor Located where
   fmap f (At region a) =
