@@ -55,7 +55,7 @@ canonicalize pkg ifaces modul =
 
 typeCheck :: Src.Module -> Can.Module -> Either E.Error (Map.Map Name.Name Can.Annotation)
 typeCheck modul canonical =
-  case unsafePerformIO (Type.run =<< Type.constrain (traceShowId canonical)) of
+  case unsafePerformIO (Type.run =<< Type.constrain canonical) of
     Right annotations ->
       Right annotations
     Left errors ->
