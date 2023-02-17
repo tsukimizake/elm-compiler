@@ -8,14 +8,17 @@ module Main
 
 import Control.Monad (msum)
 import qualified Data.ByteString as BS
+import Network.HTTP.Client.TLS (newTlsManager)
 import Snap.Core
 import Snap.Http.Server
+import qualified System.Environment as Env
 
 import qualified Artifacts
 import qualified Cors
 import qualified Endpoint.Compile as Compile
 import qualified Endpoint.Quotes as Quotes
 import qualified Endpoint.Repl as Repl
+import qualified Endpoint.Slack as Slack
 
 
 
@@ -24,9 +27,11 @@ import qualified Endpoint.Repl as Repl
 
 main :: IO ()
 main =
-  do  rArtifacts <- Artifacts.loadRepl
+  do  manager    <- newTlsManager
+      slackToken <- Env.getEnv "SLACK_TOKEN"
+      rArtifacts <- Artifacts.loadRepl
       cArtifacts <- Artifacts.loadCompile
-      errorJS <- Compile.loadErrorJS
+      errorJS    <- Compile.loadErrorJS
       let depsInfo = Artifacts.toDepsInfo cArtifacts
 
       httpServe config $ msum $
@@ -37,6 +42,7 @@ main =
         , path "compile/errors.js" $ serveJavaScript errorJS
         , path "compile/deps-info.json" $ serveDepsInfo depsInfo
         , path "quotes" $ Quotes.endpoint
+        , path "slack-invite" $ Slack.endpoint slackToken manager
         , notFound
         ]
 
