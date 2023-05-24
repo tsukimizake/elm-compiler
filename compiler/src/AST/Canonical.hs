@@ -187,7 +187,9 @@ data Type
 data AliasType
   = Holey Type
   | Filled Type
+  | NotYetFetched
   deriving (Eq, Show)
+
 
 data FieldType = FieldType {-# UNPACK #-} !Word16 Type
   deriving (Eq, Show)
@@ -348,6 +350,7 @@ instance Binary AliasType where
     case aliasType of
       Holey tipe -> putWord8 0 >> put tipe
       Filled tipe -> putWord8 1 >> put tipe
+      NotYetFetched -> error "Trying to serialize NotYetFetched"
 
   get =
     do

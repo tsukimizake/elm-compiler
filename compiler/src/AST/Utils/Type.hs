@@ -40,7 +40,8 @@ dealias args aliasType =
 
     Filled tipe ->
       tipe
-
+    NotYetFetched ->
+      error "Trying to dealias a type alias that has not been fetched yet!"
 
 dealiasHelp :: Map.Map Name.Name Type -> Type -> Type
 dealiasHelp typeTable tipe =

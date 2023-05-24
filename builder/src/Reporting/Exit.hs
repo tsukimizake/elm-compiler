@@ -1758,6 +1758,7 @@ makeToReport make =
 data BuildProblem
   = BuildBadModules FilePath Error.Module [Error.Module]
   | BuildProjectProblem BuildProjectProblem
+    deriving (Show)
 
 
 data BuildProjectProblem

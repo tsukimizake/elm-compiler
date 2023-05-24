@@ -1,5 +1,6 @@
 {-# OPTIONS_GHC -Wall #-}
 
+{-# LANGUAGE LambdaCase #-}
 module Elm.Interface
   ( Interface (..),
     Union (..),
@@ -15,7 +16,15 @@ module Elm.Interface
     extractUnion,
     extractAlias,
   )
-where
+  where
+
+
+import Control.Monad (liftM, liftM3, liftM4, liftM5)
+import Data.Binary
+import Data.Map.Strict as Map ((!))
+import qualified Data.Map.Strict as Map
+import qualified Data.Map.Merge.Strict as Map
+import qualified Data.Name as Name
 
 import qualified AST.Canonical as Can
 import qualified AST.Utils.Binop as Binop
@@ -49,6 +58,16 @@ data Alias
   = PublicAlias Can.Alias
   | PrivateAlias Can.Alias
   deriving (Eq, Show)
+
+data Binop =
+  Binop
+    { _op_name :: Name.Name
+    , _op_annotation :: Can.Annotation
+    , _op_associativity :: Binop.Associativity
+    , _op_precedence :: Binop.Precedence
+    }
+  deriving (Eq)
+
 
 data Binop = Binop
   { _op_name :: Name.Name,
