@@ -1771,6 +1771,7 @@ data BuildProjectProblem
   | BP_CannotLoadDependencies
   | BP_Cycle ModuleName.Raw [ModuleName.Raw]
   | BP_MissingExposed (NE.List (ModuleName.Raw, Import.Problem))
+  deriving(Show)
 
 
 toBuildProblemReport :: BuildProblem -> Help.Report

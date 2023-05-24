@@ -76,11 +76,12 @@ data Error
   | TupleLargerThanThree A.Region
   | TypeVarsUnboundInUnion A.Region Name.Name [Name.Name] (Name.Name, A.Region) [(Name.Name, A.Region)]
   | TypeVarsMessedUpInAlias A.Region Name.Name [Name.Name] [(Name.Name, A.Region)] [(Name.Name, A.Region)]
-
+    deriving(Show)
 
 data BadArityContext
   = TypeArity
   | PatternArity
+  deriving(Show)
 
 
 data DuplicatePatternContext
@@ -89,6 +90,7 @@ data DuplicatePatternContext
   | DPCaseBranch
   | DPLetBinding
   | DPDestruct
+  deriving(Show)
 
 
 data InvalidPayload
@@ -96,6 +98,7 @@ data InvalidPayload
   | Function
   | TypeVariable Name.Name
   | UnsupportedType Name.Name
+  deriving(Show)
 
 
 data PortProblem
@@ -104,6 +107,7 @@ data PortProblem
   | CmdBadMsg
   | SubBad
   | NotCmdOrSub
+  deriving(Show)
 
 
 data PossibleNames =
@@ -111,6 +115,7 @@ data PossibleNames =
     { _locals :: Set.Set Name.Name
     , _quals :: Map.Map Name.Name (Set.Set Name.Name)
     }
+  deriving(Show)
 
 
 
@@ -122,6 +127,7 @@ data VarKind
   | BadVar
   | BadPattern
   | BadType
+  deriving(Show)
 
 
 toKindInfo :: VarKind -> Name.Name -> ( Doc, Doc, Doc )

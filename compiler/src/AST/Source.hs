@@ -64,14 +64,17 @@ data Expr_
   | Unit
   | Tuple Expr Expr [Expr]
   | Shader Shader.Source Shader.Types
+  deriving(Show)
 
 data VarType = LowVar | CapVar
+  deriving(Show)
 
 -- DEFINITIONS
 
 data Def
   = Define (A.Located Name) [Pattern] Expr (Maybe Type)
   | Destruct Pattern Expr
+  deriving(Show)
 
 -- PATTERN
 
@@ -91,6 +94,7 @@ data Pattern_
   | PChr ES.String
   | PStr ES.String
   | PInt Int
+  deriving(Show)
 
 -- TYPE
 
@@ -105,6 +109,7 @@ data Type_
   | TRecord [(A.Located Name, Type)] (Maybe (A.Located Name))
   | TUnit
   | TTuple Type Type [Type]
+  deriving(Show)
 
 -- MODULE
 

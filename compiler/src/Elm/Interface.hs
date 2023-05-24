@@ -59,16 +59,6 @@ data Alias
   | PrivateAlias Can.Alias
   deriving (Eq, Show)
 
-data Binop =
-  Binop
-    { _op_name :: Name.Name
-    , _op_annotation :: Can.Annotation
-    , _op_associativity :: Binop.Associativity
-    , _op_precedence :: Binop.Precedence
-    }
-  deriving (Eq)
-
-
 data Binop = Binop
   { _op_name :: Name.Name,
     _op_annotation :: Can.Annotation,
