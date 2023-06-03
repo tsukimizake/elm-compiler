@@ -181,13 +181,13 @@ data Type
   | TRecord (Map.Map Name FieldType) (Maybe Name)
   | TUnit
   | TTuple Type Type (Maybe Type)
+  | TAliasElmi ModuleName.Canonical Name [(Name, Type)] -- TAliases used to glow up the size of the .elmi files
   | TAlias ModuleName.Canonical Name [(Name, Type)] AliasType
   deriving (Eq, Show)
 
 data AliasType
   = Holey Type
   | Filled Type
-  | NotYetFetched
   deriving (Eq, Show)
 
 
@@ -321,7 +321,11 @@ instance Binary Type where
       TRecord a b -> putWord8 2 >> put a >> put b
       TUnit -> putWord8 3
       TTuple a b c -> putWord8 4 >> put a >> put b >> put c
-      TAlias a b c d -> putWord8 5 >> put a >> put b >> put c >> put d
+      TAliasElmi a b c -> putWord8 5 >> put a >> put b >> put c
+      -- don't encode type blob of right hand side.
+      -- TAlias is encoded to TAliasElmi.
+      -- right hand side will be filled in loadInterfaces (working)
+      TAlias a b c _ -> putWord8 5 >> put a >> put b >> put c
       TType home name ts ->
         let potentialWord = length ts + 7
          in if potentialWord <= fromIntegral (maxBound :: Word8)
@@ -341,7 +345,7 @@ instance Binary Type where
         2 -> liftM2 TRecord get get
         3 -> return TUnit
         4 -> liftM3 TTuple get get get
-        5 -> liftM4 TAlias get get get get
+        5 -> liftM3 TAliasElmi get get get
         6 -> liftM3 TType get get get
         n -> liftM3 TType get get (replicateM (fromIntegral (n - 7)) get)
 
@@ -350,7 +354,6 @@ instance Binary AliasType where
     case aliasType of
       Holey tipe -> putWord8 0 >> put tipe
       Filled tipe -> putWord8 1 >> put tipe
-      NotYetFetched -> error "Trying to serialize NotYetFetched"
 
   get =
     do

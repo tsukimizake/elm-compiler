@@ -57,6 +57,7 @@ import qualified Stuff
 import qualified System.Directory as Dir
 import System.FilePath ((<.>), (</>))
 import qualified System.FilePath as FP
+import Debug.Trace (traceShowM)
 
 -- ENVIRONMENT
 
@@ -137,6 +138,7 @@ fromExposed style root details docsGoal exposed@(NE.List e es) =
 
       -- compile
       midpoint <- checkMidpoint dmvar statuses
+      -- traceShowM midpoint
       case midpoint of
         Left problem ->
           return (Left (Exit.BuildProjectProblem problem))
@@ -185,6 +187,7 @@ fromPaths style root details paths =
             statuses <- traverse readMVar =<< readMVar smvar
 
             midpoint <- checkMidpointAndRoots dmvar statuses sroots
+            -- traceShowM midpoint
             case midpoint of
               Left problem ->
                 return (Left (Exit.BuildProjectProblem problem))
@@ -319,6 +322,7 @@ data CachedInterface
   = Unneeded
   | Loaded I.Interface
   | Corrupted
+  deriving(Show)
 
 checkModule :: Env -> Dependencies -> MVar ResultDict -> ModuleName.Raw -> Status -> IO Result
 checkModule env@(Env _ root projectType _ _ _ _) foreigns resultsMVar name status =
@@ -474,8 +478,36 @@ loadInterfaces root same cached =
     case sequence maybeLoaded of
       Nothing ->
         return Nothing
-      Just loaded ->
-        return $ Just $ Map.union (Map.fromList loaded) (Map.fromList same)
+      Just loaded -> do
+        let newLoaded = Map.union (Map.fromList loaded) (Map.fromList same)
+        pure $ Just $ fillInAliases newLoaded
+
+fillInAliases :: Map.Map ModuleName.Raw I.Interface -> Map.Map ModuleName.Raw I.Interface
+fillInAliases ifaces =
+  -- fillin right hand side of Canonical.Type.TAlliasElmi
+  let allAliases :: Map.Map (ModuleName.Raw, Name.Name) Can.Alias
+      allAliases = Map.foldrWithKey
+        (\moduleName iface acc ->
+          Map.union
+            (Map.mapKeys (\aliasName -> (moduleName, aliasName)) (Map.map I.extractAlias $ I._aliases iface))
+            acc
+        )
+          Map.empty
+          ifaces
+  in
+      Map.map (\iface ->
+        iface {
+        I._values = Map.mapWithKey
+        (\valueName annotation ->
+          case annotation of
+            Can.Forall tvars (Can.TAliasElmi home name args) ->
+                  case Map.lookup (home, name) allAliases of
+                    Nothing -> annotation
+                    Just alias -> Can.Forall tvars (Can.TType home name (Can.TAlias alias))
+                     alias
+            _ -> annotation
+        ) (I._values iface) }
+        ) ifaces
 
 loadInterface :: FilePath -> CDep -> IO (Maybe Dep)
 loadInterface root (name, ciMvar) =

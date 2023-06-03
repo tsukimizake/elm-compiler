@@ -40,8 +40,6 @@ dealias args aliasType =
 
     Filled tipe ->
       tipe
-    NotYetFetched ->
-      error "Trying to dealias a type alias that has not been fetched yet!"
 
 dealiasHelp :: Map.Map Name.Name Type -> Type -> Type
 dealiasHelp typeTable tipe =
@@ -56,6 +54,9 @@ dealiasHelp typeTable tipe =
 
     TRecord fields ext ->
       TRecord (Map.map (dealiasField typeTable) fields) ext
+
+    TAliasElmi home name args ->
+      error "Trying to dealias a TAliasElmi"
 
     TAlias home name args t' ->
       TAlias home name (map (fmap (dealiasHelp typeTable)) args) t'
@@ -96,6 +97,9 @@ deepDealias tipe =
 
     TAlias _ _ args tipe' ->
       deepDealias (dealias args tipe')
+
+    TAliasElmi home name args ->
+      error "Trying to dealias a TAliasElmi"
 
     TType home name args ->
       TType home name (map deepDealias args)

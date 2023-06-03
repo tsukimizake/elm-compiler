@@ -142,6 +142,7 @@ data DependencyInterface
       Pkg.Name
       (Map.Map Name.Name Can.Union)
       (Map.Map Name.Name Can.Alias)
+  deriving(Show)
 
 public :: Interface -> DependencyInterface
 public =
